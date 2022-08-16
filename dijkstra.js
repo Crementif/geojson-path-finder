@@ -1,10 +1,6 @@
-var Queue = require('tinyqueue');
+import Queue from "tinyqueue";
 
-if (typeof Queue !== 'function' && Queue.default && typeof Queue.default === 'function') {
-    Queue = Queue.default;
-}
-
-module.exports = function(graph, start, end) {
+export function findPath(graph, start, end) {
     var costs = {};
     costs[start] = 0;
     var initialState = [0, [start], start];

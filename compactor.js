@@ -1,10 +1,3 @@
-'use strict';
-
-module.exports = {
-    compactNode: compactNode,
-    compactGraph: compactGraph
-};
-
 function findNextEnd(prev, v, vertices, ends, vertexCoords, edgeData, trackIncoming, options) {
     var weight = vertices[prev][v],
         reverseWeight = vertices[v][prev],
@@ -52,7 +45,7 @@ function findNextEnd(prev, v, vertices, ends, vertexCoords, edgeData, trackIncom
     };
 }
 
-function compactNode(k, vertices, ends, vertexCoords, edgeData, trackIncoming, options) {
+export function compactNode(k, vertices, ends, vertexCoords, edgeData, trackIncoming, options) {
     options = options || {};
     var neighbors = vertices[k];
     return Object.keys(neighbors).reduce(function compactEdge(result, j) {
@@ -77,7 +70,7 @@ function compactNode(k, vertices, ends, vertexCoords, edgeData, trackIncoming, o
     }, {edges: {}, incomingEdges: {}, coordinates: {}, incomingCoordinates: {}, reducedEdges: {}});
 }
 
-function compactGraph(vertices, vertexCoords, edgeData, options) {
+export function compactGraph(vertices, vertexCoords, edgeData, options) {
     options = options || {};
     var progress = options.progress;
     var ends = Object.keys(vertices).reduce(function findEnds(es, k, i, vs) {

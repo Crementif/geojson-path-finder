@@ -1,14 +1,5 @@
-'use strict';
-
-var explode = require('@turf/explode'),
-    roundCoord = require('./round-coord');
-
-
-if (typeof explode !== 'function' && explode.default && typeof explode.default === 'function') {
-    explode = explode.default;
-}
-
-module.exports = topology;
+import explode from "@turf/explode";
+import roundCoord from "./round-coord.js";
 
 function geoJsonReduce(geojson, fn, seed) {
     if (geojson.type === 'FeatureCollection') {
@@ -36,7 +27,7 @@ function isLineString(f) {
     return f.geometry.type === 'LineString';
 }
 
-function topology(geojson, options) {
+export default (geojson, options) => {
     options = options || {};
     var keyFn = options.keyFn || function defaultKeyFn(c) {
             return c.join(',');

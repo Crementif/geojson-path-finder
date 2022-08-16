@@ -1,11 +1,10 @@
-'use strict';
-
-import { compactNode } from './compactor'
-import findPath from './dijkstra'
-import preprocess from './preprocessor'
-import roundCoord from './round-coord'
-import nearestPoint from '@turf/nearest-point'
-import { point, featureCollection } from '@turf/helpers'
+import { compactNode } from './compactor.js'
+import { findPath }  from './dijkstra.js'
+import { preprocess } from './preprocessor.js';
+import roundCoord from './round-coord.js';
+import distance from '@turf/distance';
+import nearestPoint from '@turf/nearest-point';
+import { point, featureCollection } from '@turf/helpers';
 
 
 
@@ -27,10 +26,11 @@ export default function PathFinder(graph, options) {
         throw new Error('Compacted graph contains no forks (topology has no intersections).');
     }
 
-    this._points = Object.keys(this._graph.compactedVertices).map(function (coord) {
-        return point(coord.split(','))
-    })
-    this._fc = featureCollection(this._points)
+    let vertices = this._graph.vertices;
+        
+    this._points = featureCollection(Object.keys(vertices)
+        .filter((nodeName) => Object.keys(vertices[nodeName]).length)
+        .map((nodeName) => point(this._graph.sourceVertices[nodeName])));
 }
 
 PathFinder.prototype = {
@@ -86,23 +86,37 @@ PathFinder.prototype = {
     },
 
     findPathWithNearbyPoints: function (start, finish) {
-        // Find closest node in base set... do this search for both at the same time?
-        const startNearest = nearestPoint(start.geometry.coordinates, this._fc)
-        const finishNearest = nearestPoint(finish.geometry.coordinates, this._fc)
+        let startNearest = nearestPoint(start, this._points);
+        let finishNearest = nearestPoint(finish, this._points);
 
-        const startNearestCoord = startNearest
-        const finishNearestCoord = finishNearest
+        if (!(startNearest && startNearest))
+            return null;
 
-        var route = this.findPath(startNearestCoord, finishNearestCoord)
+        let route = this.findPath(startNearest, finishNearest);
         if (!route || !route.path) {
-            return null
+            return null;
         }
-        const pointArr = route.path.map(function (coords) {
-            return point(coords)
-        })
-        route.featureCollection = featureCollection(pointArr)
-        return route
+        route.path = [start.geometry.coordinates, ...route.path, finish.geometry.coordinates];
+        return route;
     },
+
+    findNearestJunction: function (p) {
+        var vertex = [null, Number.MAX_VALUE];
+        var junctions = Object.keys(this._graph.vertices).filter((function (k) {
+            var nEdges = Object.keys(this._graph.vertices[k]).length;
+            return nEdges >= 3 || nEdges == 1;
+        }).bind(this));
+
+        junctions.forEach((function (k) {
+            const dist = distance(point(p), point(this._graph.sourceVertices[k]));
+            if (dist < vertex[1]) {
+                vertex[1] = dist;
+                vertex[0] = this._graph.sourceVertices[k].slice(0);
+            }
+        }).bind(this));
+        return vertex;
+    },
+
     _createPhantom: function (n) {
         if (this._graph.compactedVertices[n]) return null;
 

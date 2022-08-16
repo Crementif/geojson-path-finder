@@ -20,6 +20,9 @@ declare module 'geojson-path-finder' {
         constructor(geoJson: FeatureCollection<LineString, G>, options?: PathFinderOptions<A, G>)
 
         findPath(start: Feature<Point>, finish: Feature<Point>): Route<A> | null
+        findNearestPoint(nearPoint : Feature<Point>): {point: Feature<Point>, distance: number};
         findPathWithNearbyPoints(start: Feature<Point>, finish: Feature<Point>): Route<A> | null
+        serialize(): Object
+        findNearestJunction(start : Position)
     }
 }

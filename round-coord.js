@@ -1,4 +1,4 @@
-module.exports = function roundCoord(c, precision) {
+export default (c, precision) => {
     return [
         Math.round(c[0] / precision) * precision,
         Math.round(c[1] / precision) * precision,
