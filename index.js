@@ -100,6 +100,11 @@ PathFinder.prototype = {
         return route;
     },
 
+    findNearestPoint: function (point) {
+        let foundPoint = nearestPoint(point, this._points);
+        return {point: foundPoint, distance: distance(point, foundPoint)};
+    },
+
     findNearestJunction: function (p) {
         var vertex = [null, Number.MAX_VALUE];
         var junctions = Object.keys(this._graph.vertices).filter((function (k) {
