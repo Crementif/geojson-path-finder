@@ -1,5 +1,5 @@
 import distance from "@turf/distance";
-import { FeatureCollection, LineString, point, Position } from "@turf/helpers";
+import { featureCollection, FeatureCollection, LineString, point, Position } from "@turf/helpers";
 import type { PathFinderGraph, PathFinderOptions, Edge, Key } from "./types";
 import compactGraph from "./compactor";
 import createTopology from "./topology";
@@ -22,13 +22,19 @@ export default function preprocess<TEdgeReduce, TProperties>(
     reducedEdges: compactedEdges,
   } = compactGraph(graph.vertices, topology.vertices, graph.edgeData, options);
 
+
+  const sourcePoints = featureCollection(Object.keys(graph.vertices)
+    .filter((nodeName) => Object.keys(graph.vertices[nodeName]).length)
+    .map((nodeName) => point(topology.vertices[nodeName])));
+
   return {
     vertices: graph.vertices,
     edgeData: graph.edgeData,
     sourceCoordinates: topology.vertices,
-    compactedVertices,
-    compactedCoordinates,
-    compactedEdges,
+    compactedVertices: compactedVertices,
+    compactedCoordinates: compactedCoordinates,
+    compactedEdges: compactedEdges,
+    sourcePoints: sourcePoints
   };
 
   function reduceEdges(

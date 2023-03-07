@@ -1,4 +1,4 @@
-import { Position } from "@turf/helpers";
+import { FeatureCollection, Point, Position } from "@turf/helpers";
 
 /**
  * Vertex key, a unique identifier for a vertex of a graph
@@ -43,6 +43,7 @@ export type PathFinderGraph<TEdgeData> = {
   compactedVertices: Vertices;
   compactedCoordinates: Record<Key, Record<Key, Position[]>>;
   compactedEdges: Record<Key, Record<Key, TEdgeData | undefined>>;
+  sourcePoints: FeatureCollection<Point>;
 };
 
 export type PathFinderOptions<TEdgeReduce, TProperties> = {

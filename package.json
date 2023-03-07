@@ -24,6 +24,7 @@
     "@turf/distance": "^6.5.0",
     "@turf/explode": "^6.5.0",
     "@turf/helpers": "^6.5.0",
+    "@turf/nearest-point": "^6.5.0",
     "tinyqueue": "^2.0.3"
   },
   "devDependencies": {

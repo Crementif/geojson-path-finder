@@ -6,6 +6,7 @@ import {
   Point,
   Position,
 } from "@turf/helpers";
+import nearestPoint from "@turf/nearest-point";
 import { compactNode } from "./compactor";
 import findPath from "./dijkstra";
 import preprocess from "./preprocessor";
@@ -108,6 +109,30 @@ export default class PathFinder<TEdgeReduce, TProperties> {
       this._removePhantom(phantomStart);
       this._removePhantom(phantomEnd);
     }
+  }
+
+  findPathWithNearbyPoints(
+    a: Feature<Point>,
+    b: Feature<Point>
+  ): Path<TEdgeReduce> | undefined {
+    let startNearest = nearestPoint(a, this.graph.sourcePoints);
+    let finishNearest = nearestPoint(b, this.graph.sourcePoints);
+
+    if (!(startNearest && startNearest))
+        return;
+
+    let route = this.findPath(startNearest, finishNearest);
+    if (!route || !route.path) {
+        return;
+    }
+    route.path = [a.geometry.coordinates, ...route.path, b.geometry.coordinates];
+    return route;
+  }
+  
+  findNearestPoint(
+    point: Feature<Point>
+  ): Feature<Point> {
+    return nearestPoint(point, this.graph.sourcePoints);
   }
 
   _createPhantom(n: Key) {
